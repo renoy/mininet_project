@@ -1,0 +1,9 @@
+Project Objective:
+-Build a network of desired depth and fanout.
+-In-band controller.
+-All the hosts start sending traffic to a particular host.
+-Traffic consists of certain # of data packets of a specified packet size and then a packet to generate a control traffic.
+-Latency for the new packet to reach the destination host after the flow table being populated to the respective OVSs.
+- % Packet Loss
+- Iperf between the host and the controller
+
