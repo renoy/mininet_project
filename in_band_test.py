@@ -39,8 +39,9 @@ def topo_init():
 	s1.attach( link.intf2 )
 	net.configHosts()
 	
-	"Hosts list"
+	"Hosts list and the total # of hosts"
 	hosts_list = net.hosts
+	num_hosts = len( hosts_list )
         
 	"Assigning IP addresses to switches in the network"
 	"TODO: Automate assigning of IP addresses"
@@ -71,6 +72,10 @@ def topo_init():
 	s13 = net.get('s13')
         s13.cmd( 'ifconfig s13 10.0.0.62' )
 
+	"Start the controller in 'server' host"
+	controller_host = hosts_list[-1]
+	controller_host.cmd( 'controller -v ptcp:6633 &' )
+
 	"Fetch the listener host in the network"
 	server_host = hosts_list[-2]
 	info( server_host.cmd( 'pwd' ) )
@@ -78,15 +83,13 @@ def topo_init():
 	"Start the listener script in the listener host"
 	info( server_host.cmd( './listener.sh &' ) )
 
-
 	"Start the sender script in the remaining hosts"
-	#print "Line after listener script"
-	#info( server_host.cmd( 'ifconfig' ) )
 	#del hosts_list [0]
-	#net.start()
-	#for n in hosts_list:
-		#n.cmd( 'sudo wireshark &' )
-		#n.cmd( './sender.sh' )
+	num_sender_hosts = num_hosts-2
+	#print num_sender_hosts
+	#for n in hosts_list[:num_sender_hosts]:
+		#info( n.cmd( 'ifconfig | grep inet' ) )
+		#n.cmd( './sender.sh &' )
 
 	CLI( net )
 	net.stop()
