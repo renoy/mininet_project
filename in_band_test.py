@@ -32,23 +32,19 @@ def topo_init():
 	c0 = net.addController( 'c0', controller=InbandController, ip='10.0.0.100' )
 	net.start()
 
-	server = net.addHost( 'server', ip='10.0.0.100')
-	#net.addLink( h0, s1 )
-	
-	"Starting controller on Switch s1 alone"	
-	#c0.start()
-	#net.build()
+	"Adding a host for changing to controller"
+	server = net.addHost( 'server', ip='10.0.0.100')	
 	s1 = net.get('s1')
 	link = net.addLink( server, s1 )
 	s1.attach( link.intf2 )
 	net.configHosts()
-	#s1.cmd( 'ifconfig s1 10.0.0.50' )
-	#s1.start( [ c0 ] )
-	#hosts_list = net.hosts
-	#no_of_hosts = len( hosts_list )
-	#print "# of hosts: %d" %no_of_hosts
-	#net.start()
-        s1 = net.get('s1')
+	
+	"Hosts list"
+	hosts_list = net.hosts
+        
+	"Assigning IP addresses to switches in the network"
+	"TODO: Automate assigning of IP addresses"
+	s1 = net.get('s1')
         s1.cmd( 'ifconfig s1 10.0.0.50' )
 	s2 = net.get('s2')
 	s2.cmd( 'ifconfig s2 10.0.0.51' )
@@ -74,10 +70,16 @@ def topo_init():
         s12.cmd( 'ifconfig s12 10.0.0.61' )
 	s13 = net.get('s13')
         s13.cmd( 'ifconfig s13 10.0.0.62' )
-	#server_host = hosts_list[-1]
-	#info( server_host.cmd( 'pwd' ) )
-	#server_host.cmd( 'xterm h27' )
-	#server_host.cmd( '(./listener.sh)&' )
+
+	"Fetch the listener host in the network"
+	server_host = hosts_list[-2]
+	info( server_host.cmd( 'pwd' ) )
+
+	"Start the listener script in the listener host"
+	info( server_host.cmd( './listener.sh &' ) )
+
+
+	"Start the sender script in the remaining hosts"
 	#print "Line after listener script"
 	#info( server_host.cmd( 'ifconfig' ) )
 	#del hosts_list [0]
@@ -85,11 +87,14 @@ def topo_init():
 	#for n in hosts_list:
 		#n.cmd( 'sudo wireshark &' )
 		#n.cmd( './sender.sh' )
+
 	CLI( net )
 	net.stop()
+
+
 
 if __name__ == '__main__':
 	setLogLevel('info')
 	topo_init()
-	#traffic_gen()
+	
 
