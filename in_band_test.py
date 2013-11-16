@@ -17,6 +17,7 @@ from mininet.node import Node, OVSSwitch, Controller, RemoteController
 from mininet.link import Link
 from mininet.log import setLogLevel, info
 from mininet.topolib import TreeNet, TreeTopo
+from time import sleep
 
 class InbandController( RemoteController ):
 
@@ -26,6 +27,7 @@ class InbandController( RemoteController ):
 
 def topo_init():
 	myTopo = TreeTopo( depth=3, fanout=3 )
+	global net 
 	net = Mininet( topo=myTopo, switch=OVSSwitch, build=False )
 
 	"Creating Controller"
@@ -40,7 +42,9 @@ def topo_init():
 	net.configHosts()
 	
 	"Hosts list and the total # of hosts"
+	global hosts_list 
 	hosts_list = net.hosts
+	global num_hosts
 	num_hosts = len( hosts_list )
         
 	"Assigning IP addresses to switches in the network"
@@ -73,31 +77,44 @@ def topo_init():
         s13.cmd( 'ifconfig s13 10.0.0.62' )
 
 	"Start the controller in 'server' host"
+	global controller_host 
 	controller_host = hosts_list[-1]
-	controller_host.cmd( 'controller -v ptcp:6633 &' )
+	#info( controller_host.cmd( 'controller -v ptcp:6633 &' ) )
 
 	"Fetch the listener host in the network"
+	global server_host 
 	server_host = hosts_list[-2]
-	info( server_host.cmd( 'pwd' ) )
+	server_host.cmd( 'pwd' )
 
 	"Start the listener script in the listener host"
-	info( server_host.cmd( './listener.sh &' ) )
+	#info( server_host.cmd( './listener.sh &' ) )
+	#server_host.cmd( 'while true; do nc -l -p 2222; done > /home/mininet/mininet/custom/dump.txt &' )
 
 	"Start the sender script in the remaining hosts"
 	#del hosts_list [0]
-	num_sender_hosts = num_hosts-2
+	#num_sender_hosts = num_hosts-2
 	#print num_sender_hosts
 	#for n in hosts_list[:num_sender_hosts]:
+		#server_host.cmd( 'while true; do nc -l -p 2222; done > /home/mininet/mininet/custom/dump.txt &' )
 		#info( n.cmd( 'ifconfig | grep inet' ) )
 		#n.cmd( './sender.sh &' )
 
-	CLI( net )
+	#CLI( net )
+	#net.stop()
+
+def test_run():
+	num_sender_hosts = num_hosts-2
+	print num_sender_hosts
+	print controller_host
+	controller_host.popen( 'controller -v ptcp:6633' ) 
+	print server_host
+	server_host.popen( 'ncat -l 2222 --keep-open >> /home/mininet/mininet/custom/dump.txt' )
+	#net.pingAll()
+	CLI( net )	
 	net.stop()
-
-
 
 if __name__ == '__main__':
 	setLogLevel('info')
 	topo_init()
-	
+	test_run()	
 
