@@ -67,34 +67,6 @@ def topo_init():
 
                 s = net.get('s%d' % i)
                 s.cmd( 'ifconfig s%d %s ' % (i, ip) )
-        """
-	s1 = net.get('s1')
-        s1.cmd( 'ifconfig s1 10.0.0.50' )
-	s2 = net.get('s2')
-	s2.cmd( 'ifconfig s2 10.0.0.51' )
-	s3 = net.get('s3')
-        s3.cmd( 'ifconfig s3 10.0.0.52' )
-	s4 = net.get('s4')
-        s4.cmd( 'ifconfig s4 10.0.0.53' )
-	s5 = net.get('s5')
-        s5.cmd( 'ifconfig s5 10.0.0.54' )
-	s6 = net.get('s6')
-        s6.cmd( 'ifconfig s6 10.0.0.55' )
-	s7 = net.get('s7')
-        s7.cmd( 'ifconfig s7 10.0.0.56' )
-	s8 = net.get('s8')
-        s8.cmd( 'ifconfig s8 10.0.0.57' )
-	s9 = net.get('s9')
-        s9.cmd( 'ifconfig s9 10.0.0.58' )
-	s10 = net.get('s10')
-        s10.cmd( 'ifconfig s10 10.0.0.59' )
-	s11 = net.get('s11')
-        s11.cmd( 'ifconfig s11 10.0.0.60' )
-	s12 = net.get('s12')
-        s12.cmd( 'ifconfig s12 10.0.0.61' )
-	s13 = net.get('s13')
-        s13.cmd( 'ifconfig s13 10.0.0.62' )
-	"""
 
 	"Start the controller in 'server' host"
 	global controller_host 
@@ -128,12 +100,15 @@ def test_run():
 	print controller_host
 	controller_host.cmd( 'cd ~' )
 	#info( controller_host.cmd( 'pwd' ) )
-	controller_host.cmd( '*nohup controller -v ptcp:6633 &' ) 
-	#print server_host
-	#server_host.cmd( 'nohup ncat -l 2222 --keep-open >> /home/mininet/mininet/custom/dump.txt &' )
-	#net.pingAll()
+	controller_host.cmd( 'controller -v ptcp:6633 >controller.txt 2>&1 &', shell=True ) 
+	print server_host
+	server_host.cmd( 'ncat -l 2222 --keep-open > /home/mininet/mininet/custom/dump.txt 2>&1 &' )
+	net.pingAll()
 
-	CLI( net )	
+	CLI( net )
+
+	controller_host.cmd( 'pkill controller' )
+		
 	net.stop()
 
 if __name__ == '__main__':
