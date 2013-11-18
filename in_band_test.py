@@ -76,7 +76,7 @@ def topo_init():
 	"Fetch the listener host in the network"
 	global server_host 
 	server_host = hosts_list[-2]
-	server_host.cmd( 'pwd' )
+	#server_host.cmd( 'pwd' )
 
 	"Start the listener script in the listener host"
 	#info( server_host.cmd( './listener.sh &' ) )
@@ -102,8 +102,14 @@ def test_run():
 	#info( controller_host.cmd( 'pwd' ) )
 	controller_host.cmd( 'controller -v ptcp:6633 >controller.txt 2>&1 &', shell=True ) 
 	print server_host
-	server_host.cmd( 'ncat -l 2222 --keep-open > /home/mininet/mininet/custom/dump.txt 2>&1 &' )
-	net.pingAll()
+	server_host.cmd( 'ncat -l 2222 --keep-open < /home/mininet/mininet/custom/dump.txt 2>&1 &' )
+	#server_host.cmd( 'cat dump.txt | ncat -l 2222 --keep-open > /home/mininet/mininet/custom/out.txt 2>&1 &' )
+        for n in hosts_list[:num_sender_hosts]:
+                #n.cmd( 'ifconfig | grep inet' )
+                n.popen( './sender.sh >sender.txt 2>&1 &' )
+                #server_hosl.cmd( 'while true; do nc -l -p 2222; done > /home/mininet/mininet/custom/dump.txt &' )
+	
+	#net.pingAll()
 
 	CLI( net )
 
