@@ -18,6 +18,7 @@ from mininet.link import Link
 from mininet.log import setLogLevel, info
 from mininet.topolib import TreeNet, TreeTopo
 from time import sleep
+import struct, socket
 
 class InbandController( RemoteController ):
 
@@ -49,6 +50,24 @@ def topo_init():
         
 	"Assigning IP addresses to switches in the network"
 	"TODO: Automate assigning of IP addresses"
+	ip = hosts_list[-2].IP()
+
+        "Assigning IP addresses to switches in the network"
+        switch_list = net.switches
+        n = len(switch_list)
+        ip = hosts_list[-2].IP()
+
+        for i in range(1,n+1):
+
+                ip2int = lambda ipstr: struct.unpack( '!I', socket.inet_aton(ipstr))[0]
+                int_ip = ip2int(ip)
+                int_ip+=1
+                int2ip = lambda n: socket.inet_ntoa(struct.pack('!I', n))
+                ip = int2ip(int_ip)
+
+                s = net.get('s%d' % i)
+                s.cmd( 'ifconfig s%d %s ' % (i, ip) )
+        """
 	s1 = net.get('s1')
         s1.cmd( 'ifconfig s1 10.0.0.50' )
 	s2 = net.get('s2')
@@ -75,6 +94,7 @@ def topo_init():
         s12.cmd( 'ifconfig s12 10.0.0.61' )
 	s13 = net.get('s13')
         s13.cmd( 'ifconfig s13 10.0.0.62' )
+	"""
 
 	"Start the controller in 'server' host"
 	global controller_host 
@@ -106,10 +126,13 @@ def test_run():
 	num_sender_hosts = num_hosts-2
 	print num_sender_hosts
 	print controller_host
-	controller_host.popen( 'controller -v ptcp:6633' ) 
-	print server_host
-	server_host.popen( 'ncat -l 2222 --keep-open >> /home/mininet/mininet/custom/dump.txt' )
+	controller_host.cmd( 'cd ~' )
+	#info( controller_host.cmd( 'pwd' ) )
+	controller_host.cmd( '*nohup controller -v ptcp:6633 &' ) 
+	#print server_host
+	#server_host.cmd( 'nohup ncat -l 2222 --keep-open >> /home/mininet/mininet/custom/dump.txt &' )
 	#net.pingAll()
+
 	CLI( net )	
 	net.stop()
 
