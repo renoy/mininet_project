@@ -48,9 +48,6 @@ def topo_init():
 	global num_hosts
 	num_hosts = len( hosts_list )
         
-	"Assigning IP addresses to switches in the network"
-	"TODO: Automate assigning of IP addresses"
-	ip = hosts_list[-2].IP()
 
         "Assigning IP addresses to switches in the network"
         switch_list = net.switches
@@ -71,12 +68,10 @@ def topo_init():
 	"Start the controller in 'server' host"
 	global controller_host 
 	controller_host = hosts_list[-1]
-	#info( controller_host.cmd( 'controller -v ptcp:6633 &' ) )
 
 	"Fetch the listener host in the network"
 	global server_host 
 	server_host = hosts_list[-2]
-	#server_host.cmd( 'pwd' )
 
 	"Start the listener script in the listener host"
 	#info( server_host.cmd( './listener.sh &' ) )
@@ -99,14 +94,12 @@ def test_run():
 	print num_sender_hosts
 	print controller_host
 	controller_host.cmd( 'cd ~' )
-	#info( controller_host.cmd( 'pwd' ) )
 	controller_host.cmd( 'controller -v ptcp:6633 >controller.txt 2>&1 &' ) 
 	print server_host
-	server_host.cmd( 'ncat -l 2222 --keep-open < /home/mininet/mininet/custom/dump.txt 2>&1 &' )
-	#server_host.cmd( 'cat dump.txt | ncat -l 2222 --keep-open > /home/mininet/mininet/custom/out.txt 2>&1 &' )
+	server_host.cmd( 'ncat -l 2222 --keep-open > /home/mininet/mininet/custom/dump.txt 2>&1 &' )
+	
         for n in hosts_list[:num_sender_hosts]:
-                #n.cmd( 'ifconfig | grep inet' )
-                n.popen( './sender.sh >sender.txt 2>&1 &' )
+                n.popen( './sender.sh 100 10.0.0.27 192.168.1.1 >sender.txt 2>&1 &' )
                 #server_hosl.cmd( 'while true; do nc -l -p 2222; done > /home/mininet/mininet/custom/dump.txt &' )
 	
 	#net.pingAll()
