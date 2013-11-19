@@ -100,7 +100,7 @@ def test_run():
 	print controller_host
 	controller_host.cmd( 'cd ~' )
 	#info( controller_host.cmd( 'pwd' ) )
-	controller_host.cmd( 'controller -v ptcp:6633 >controller.txt 2>&1 &', shell=True ) 
+	controller_host.cmd( 'controller -v ptcp:6633 >controller.txt 2>&1 &' ) 
 	print server_host
 	server_host.cmd( 'ncat -l 2222 --keep-open < /home/mininet/mininet/custom/dump.txt 2>&1 &' )
 	#server_host.cmd( 'cat dump.txt | ncat -l 2222 --keep-open > /home/mininet/mininet/custom/out.txt 2>&1 &' )
