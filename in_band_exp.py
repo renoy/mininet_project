@@ -82,7 +82,7 @@ def test_run():
     server_ip = server_host.IP()
     ping_ip = hosts_list[-3].IP()
     controller_host.cmd( 'controller -v ptcp:6633 >>controller.txt 2>&1 &' ) 
-    server_host.cmd( 'ncat -l 2222 --keep-open >>dump.txt 2>&1 &' )
+    server_host.cmd( 'ncat -l 2222 --keep-open >/dev/null 2>&1 &' )
     for n in hosts_list[:num_sender_hosts]:
             n.popen( 'sudo bash sender.sh 100 %s %s > sender.txt 2>&1 &' % (server_ip, ping_ip) )
     CLI( net )
