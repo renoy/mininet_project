@@ -17,7 +17,7 @@ do
         count=`expr $count + 1`
         if [ "$count" -eq "$mid" ] ;
         then
-                (ping $3  -c 1 >> ping.txt 2>&1)&
+                (ping $3 -c 1 >> ping.txt 2>&1)&
         fi
         perl -e 'print "A"x1' | nc $2 2222
 done
