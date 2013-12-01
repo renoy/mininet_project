@@ -27,7 +27,7 @@ import struct, socket
         #return
 
 def topo_init():
-	myTopo = TreeTopo( depth=2, fanout=32 )
+	myTopo = TreeTopo( depth=2, fanout=8 )
 	global net 
 	net = Mininet( topo=myTopo, switch=OVSSwitch )
 
@@ -61,7 +61,7 @@ def topo_init():
 
         for i in range(1,n+1):
 
-                ip2int = lambda ipstr: struct.unpack( '!I', socket.inet_aton(ipstr))[0]
+                ip2int = lambda ipstr: struct.un/pack( '!I', socket.inet_aton(ipstr))[0]
                 int_ip = ip2int(ip)
                 int_ip+=1
                 int2ip = lambda n: socket.inet_ntoa(struct.pack('!I', n))
@@ -96,7 +96,7 @@ def topo_init():
 	#net.stop()
 
 def test_run():
-	num_sender_hosts = num_hosts-2
+	num_sender_hosts = num_hosts-8
 	#print num_sender_hosts
 	#print controller_host
 	#controller_host.cmd( 'cd ~' )
@@ -105,20 +105,21 @@ def test_run():
 	#controller_host.cmd( 'controller -v ptcp:6633 >controller.txt 2>&1 &' ) 
 	#net.pingAll()
 	#print server_host
-	server_host.cmd( 'ncat -l 2222 --keep-open >>dump.txt 2>&1 &' )
+	ping_ip = hosts_list[-3].IP()
+	server_host.cmd( 'ncat -l 2222 --keep-open > /dev/null 2>&1 &' )
 	#server_host.cmd( 'cat dump.txt | ncat -l 2222 --keep-open > /home/mininet/mininet/custom/out.txt 2>&1 &' )
         for n in hosts_list[:num_sender_hosts]:
                 #n.cmd( 'ifconfig | grep inet' )
-                n.popen( 'sudo ./sender.sh 10 %s 10.254.254.25 >sender.txt 2>&1 &' % server_ip )
+                n.popen( 'sudo ./sender.sh 1000 %s %s >sender.txt 2>&1 &' % ( server_ip, ping_ip ) )
                 #server_hosl.cmd( 'while true; do nc -l -p 2222; done > /home/mininet/mininet/custom/dump.txt &' )
 	
 	#net.pingAll()
 
 	CLI( net )
 
-	controller_host.cmd( 'pkill controller' )
+	#controller_host.cmd( 'pkill controller' )
 	server_host.cmd( 'pkill ncat' )
-			
+	server_host.cmd( 'sudo rm ping.txt rtt_val.txt controller.txt' )		
 	net.stop()
 
 if __name__ == '__main__':
